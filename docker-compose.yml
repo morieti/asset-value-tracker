@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+  web:
+    build: web/docker/.
+    container_name: web
+    restart: always
+    volumes:
+      - ./web/app:/var/www/html/app
+    env_file:
+      - web/app/.env
+    ports:
+      - "127.0.0.1:80:80"
+    links:
+      - influxdb:influxdb
+      - redis:redis
+    depends_on:
+      - influxdb
+      - redis
+
+  worker:
+    build: worker/docker/.
+    container_name: worker
+    restart: always
+    volumes:
+      - ./worker/app:/var/www/html/app
+    env_file:
+      - worker/app/.env
+    environment:
+      - MODE=worker
+#    ports:
+#      - "127.0.0.1:80:80"
+    links:
+      - influxdb:influxdb
+      - redis:redis
+    depends_on:
+      - influxdb
+      - redis
+
+  influxdb:
+    image: influxdb:2
+    container_name: influxdb
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8086:8086"
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb
+      - ./conf/influxdb.cnf:/etc/influxdb/influxdb.cnf
+#    entrypoint:
+#      - DOCKER_INFLUXDB_INIT_MODE=setup
+#      - DOCKER_INFLUXDB_INIT_USERNAME=root
+#      - DOCKER_INFLUXDB_INIT_PASSWORD=root
+#      - DOCKER_INFLUXDB_INIT_ORG=morieti
+#      - DOCKER_INFLUXDB_INIT_BUCKET=tpd
+# API TOKEN = MkO81EhEW4i47h3SppRU0R4isJgoXBiEBsESApj6Z-9FaxPoSeH5IMzhGVMSD-vlsGJ73qNDOWkJYsD4KFFMOw==
+
+  redis:
+    image: redis:6.2.10
+    container_name: redis
+    ports:
+      - "127.0.0.1:6379:6379"

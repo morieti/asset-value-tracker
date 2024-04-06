@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [ "$MODE" = "worker" ]; then
+  pip install -r requirements.txt
+  python3 worker.py
+else
+    echo "MODE env var is not set"
+fi

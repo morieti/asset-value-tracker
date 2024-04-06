@@ -1,0 +1,5 @@
+selenium==4.19.0
+requests==2.31.0
+jdatetime==5.0.0
+python-dotenv==1.0.1
+influxdb-client==1.41.0
